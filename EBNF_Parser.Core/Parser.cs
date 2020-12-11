@@ -16,15 +16,8 @@ namespace EBNF_Parser.Core
         {
             var rules = Regex.Split(content, @"\s*;\s*(?:\r?\n)+")
                 .Select(line => Regex.Replace(line, @"\s*(\r?\n)+\s*", " "))
-                .Select(line => Regex.Match(line, @"(.*?)\s*=\s*(.*)").Groups)
-                .ToDictionary(group => group[1].Value, SplitRHS(2));
-
-            static Func<GroupCollection, Rule> SplitRHS(int index)
-                => group => 
-                {
-                    var value = group[index];
-                    return default!;
-                };
+                .Select(line => Rule.TryParse(line, out var rule) ? rule : throw new())
+                .ToArray();
         }
     }
 }
