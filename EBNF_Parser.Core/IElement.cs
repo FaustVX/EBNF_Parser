@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+
 namespace EBNF_Parser.Core
 {
     public interface IElement
     {
+        string ToString();
     }
 
     public class Rule
@@ -18,26 +21,28 @@ namespace EBNF_Parser.Core
 
     public class Alternation : IElement
     {
-        public Alternation(IElement left, IElement right)
+        public Alternation(IEnumerable<IElement> elements)
         {
-            Left = left;
-            Right = right;
+            Elements = elements;
         }
 
-        public IElement Left { get; }
-        public IElement Right { get; }
+        public IEnumerable<IElement> Elements { get; }
+
+        public override string ToString()
+            => string.Join(" | ", Elements);
     }
 
     public class Concatenation : IElement
     {
-        public Concatenation(IElement left, IElement right)
+        public Concatenation(IEnumerable<IElement> elements)
         {
-            Left = left;
-            Right = right;
+            Elements = elements;
         }
 
-        public IElement Left { get; }
-        public IElement Right { get; }
+        public IEnumerable<IElement> Elements { get; }
+
+        public override string ToString()
+            => string.Join(", ", Elements);
     }
 
     public class Option : IElement
@@ -48,6 +53,9 @@ namespace EBNF_Parser.Core
         }
 
         public IElement Value { get; }
+
+        public override string ToString()
+            => $"[ {Value} ]";
     }
 
     public class Repetition : IElement
@@ -58,6 +66,9 @@ namespace EBNF_Parser.Core
         }
 
         public IElement Value { get; }
+
+        public override string ToString()
+            => $"{{ {Value} }}";
     }
 
     public class Group : IElement
@@ -68,6 +79,9 @@ namespace EBNF_Parser.Core
         }
 
         public IElement Value { get; }
+
+        public override string ToString()
+            => $"( {Value} )";
     }
 
     public class String : IElement
@@ -78,6 +92,9 @@ namespace EBNF_Parser.Core
         }
 
         public string Value { get; }
+
+        public override string ToString()
+            => $"\" {Value} \"";
     }
 
     public class Comment : IElement
@@ -88,6 +105,9 @@ namespace EBNF_Parser.Core
         }
 
         public string Value { get; }
+
+        public override string ToString()
+            => $"(* {Value} *)";
     }
 
     public class Special : IElement
@@ -98,6 +118,9 @@ namespace EBNF_Parser.Core
         }
 
         public string Value { get; }
+
+        public override string ToString()
+            => $"? {Value} ?";
     }
 
     public class Exception : IElement
@@ -108,5 +131,8 @@ namespace EBNF_Parser.Core
         }
 
         public string Value { get; }
+
+        public override string ToString()
+            => $"- {Value}";
     }
 }
