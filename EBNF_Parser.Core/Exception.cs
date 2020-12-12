@@ -4,23 +4,20 @@ using System.Linq;
 
 namespace EBNF_Parser.Core
 {
-    public class Exception : IElement
+    public class Exception : MultiElement
     {
-        public Exception(params IElement[] elements)
-        {
-            Elements = elements;
-        }
-
         public Exception(IEnumerable<IElement> elements)
             : this(elements.ToArray())
         { }
 
-        public IElement[] Elements { get; }
+        public Exception(params IElement[] elements)
+            : base(elements)
+        { }
 
         public override string ToString()
             => string.Join<IElement>(" - ", Elements);
 
-        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
+        public override bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
         {
             foreach (var element in Elements)
             {
@@ -39,7 +36,7 @@ namespace EBNF_Parser.Core
         }
 
         internal static bool TryParse(string input, [MaybeNullWhen(false)] out IElement element)
-            => IElement.TryParseMultiElem(input, "-", out element, (elem1, elem2) => new Exception(elem1, elem2).Simplify());
+            => TryParse(input, "-", out element, (elem1, elem2) => new Exception(elem1, elem2).Simplify());
 
         private Exception Simplify()
         {

@@ -4,19 +4,16 @@ using System.Text.RegularExpressions;
 
 namespace EBNF_Parser.Core
 {
-    public class Repetition : IElement
+    public class Repetition : SingleElement
     {
         public Repetition(IElement element)
-        {
-            Element = element;
-        }
-
-        public IElement Element { get; }
+            : base(element)
+        { }
 
         public override string ToString()
             => $"{{ {Element} }}";
 
-        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
+        public override bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
         {
             var length = 0;
             parsed = default;
@@ -40,6 +37,6 @@ namespace EBNF_Parser.Core
         }
 
         internal static bool TryParse(string input, [MaybeNullWhen(false)] out IElement element)
-            => IElement.TryParseGroupping(input, @"{", @"}", out element, elem => new Repetition(elem));
+            => TryParse(input, @"{", @"}", out element, elem => new Repetition(elem));
     }
 }

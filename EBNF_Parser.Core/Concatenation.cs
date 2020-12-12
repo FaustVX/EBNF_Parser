@@ -5,23 +5,20 @@ using System.Text;
 
 namespace EBNF_Parser.Core
 {
-    public class Concatenation : IElement
+    public class Concatenation : MultiElement
     {
         public Concatenation(IEnumerable<IElement> elements)
             : this (elements.ToArray())
         { }
 
         public Concatenation(params IElement[] elements)
-        {
-            Elements = elements;
-        }
-
-        public IElement[] Elements { get; }
+            : base(elements)
+        { }
 
         public override string ToString()
             => string.Join<IElement>(", ", Elements);
 
-        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
+        public override bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
         {
             var length = 0;
             parsed = default;
@@ -45,7 +42,7 @@ namespace EBNF_Parser.Core
         }
 
         internal static bool TryParse(string input, [MaybeNullWhen(false)] out IElement element)
-            => IElement.TryParseMultiElem(input, ",", out element, (elem1, elem2) => new Concatenation(elem1, elem2).Simplify());
+            => TryParse(input, ",", out element, (elem1, elem2) => new Concatenation(elem1, elem2).Simplify());
 
         private Concatenation Simplify()
         {

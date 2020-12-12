@@ -3,20 +3,17 @@ using System.Text.RegularExpressions;
 
 namespace EBNF_Parser.Core
 {
-    public class Group : IElement
+    public class Group : SingleElement
     {
         public Group(IElement value)
-        {
-            Value = value;
-        }
-
-        public IElement Value { get; }
+            : base(value)
+        { }
 
         public override string ToString()
-            => $"( {Value} )";
+            => $"( {Element} )";
 
-        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
-            => Value.TryParse(input, parser, out parsed);
+        public override bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
+            => Element.TryParse(input, parser, out parsed);
 
         public static bool TryParse(string input, [MaybeNullWhen(false)] out Group group)
         {
@@ -26,6 +23,6 @@ namespace EBNF_Parser.Core
         }
 
         internal static bool TryParse(string input, [MaybeNullWhen(false)] out IElement element)
-            => IElement.TryParseGroupping(input, @"\(", @"\)", out element, elem => new Group(elem));
+            => TryParse(input, @"\(", @"\)", out element, elem => new Group(elem));
     }
 }

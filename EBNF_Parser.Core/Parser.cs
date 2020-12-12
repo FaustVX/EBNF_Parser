@@ -26,13 +26,8 @@ namespace EBNF_Parser.Core
             static IEnumerable<IElement> SelectMany(IElement element)
                 => element switch
                 {
-                    Alternation { Elements: var elem } => elem,
-                    Concatenation { Elements: var elem } => elem,
-                    Exception { Elements: var elem } => elem,
-                    Group { Value: var elem } => Enumerable.Repeat(elem, 1),
-                    Option { Value: var elem } => Enumerable.Repeat(elem, 1),
-                    Quantifier { Element: var elem } => Enumerable.Repeat(elem, 1),
-                    Repetition { Element: var elem } => Enumerable.Repeat(elem, 1),
+                    MultiElement { Elements: var elem } => elem,
+                    SingleElement { Element: var elem } => Enumerable.Repeat(elem, 1),
                     _ => Enumerable.Empty<IElement>()
                 };
         }

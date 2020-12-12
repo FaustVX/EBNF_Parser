@@ -4,23 +4,20 @@ using System.Linq;
 
 namespace EBNF_Parser.Core
 {
-    public class Alternation : IElement
+    public class Alternation : MultiElement
     {
         public Alternation(IEnumerable<IElement> elements)
             : this(elements.ToArray())
         { }
 
         public Alternation(params IElement[] elements)
-        {
-            Elements = elements;
-        }
-
-        public IElement[] Elements { get; }
+            : base(elements)
+        { }
 
         public override string ToString()
             => string.Join<IElement>(" | ", Elements);
 
-        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
+        public override bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
         {
             foreach (var element in Elements)
                 if (element.TryParse(input, parser, out parsed))
@@ -37,7 +34,7 @@ namespace EBNF_Parser.Core
         }
 
         internal static bool TryParse(string input, [MaybeNullWhen(false)] out IElement element)
-            => IElement.TryParseMultiElem(input, @"\|", out element, (elem1, elem2) => new Alternation(elem1, elem2).Simplify());
+            => TryParse(input, @"\|", out element, (elem1, elem2) => new Alternation(elem1, elem2).Simplify());
 
         private Alternation Simplify()
         {
