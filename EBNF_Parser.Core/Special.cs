@@ -7,16 +7,19 @@ namespace EBNF_Parser.Core
     {
         public Special(string value)
         {
-            Value = value;
+            var group = Regex.Match(value, @"^(.+?)(?:\s+(.+))?$").Groups;
+            Identifier = group[1].Value.Trim(' ');
+            Parameter = group[2].Value.Trim(' ');
         }
 
-        public string Value { get; }
+        public string Identifier { get; }
+        public string Parameter { get; }
 
         public override string ToString()
-            => $"? {Value} ?";
+            => $"? {Identifier} {Parameter} ?";
 
         public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
-            => (parsed = new(input, this, input.Length)) is not null;
+            => (parser.Specials.TryGetValue(Identifier, out var parse) && parse(input, this, out parsed)) || (parsed = default) is not null;
 
         public static bool TryParse(string input, [MaybeNullWhen(false)] out Special special)
         {

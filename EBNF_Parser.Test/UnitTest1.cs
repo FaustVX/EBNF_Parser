@@ -12,10 +12,12 @@ namespace EBNF_Parser.Test
         {
             var parser = Parser.ParseModel(@"fr = ( ""bonjour"", "" "", ""ça va "" );
 en = ""hi"", "" how are you "";
-hi = (fr | en), { 2 * ""?"" }");
+hi = (fr | en), { 2 * ""?"" } | ? binary 65 ?;");
+            parser.Specials["binary"] = static (string input, Special element, out Parsed p) => byte.TryParse(element.Parameter, out var b) && (byte)input[0] == b ? (p = new(input[..1], element, 1)) is not null : (p = default!) is not null;
             var parsed = parser.Rules["hi"].TryParse("hi how are you ????", out var p);
             parsed = parser.Rules["hi"].TryParse("hi how are you ?????", out p);
             parsed = parser.Rules["hi"].TryParse("hi how are you ??????", out p);
+            parsed = parser.Rules["hi"].TryParse("A", out p);
 
             Assert.IsTrue(IElement.TryParse(@"""|"" | "",""", out var elem));
             Assert.IsTrue(elem is Alternation { Elements: { Length: 2 } e } && e[0] is String { Value: "|" } && e[1] is String { Value: "," });

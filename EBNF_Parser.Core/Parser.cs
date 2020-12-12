@@ -7,11 +7,14 @@ using System.Text.RegularExpressions;
 
 namespace EBNF_Parser.Core
 {
+    public delegate bool TryParse(string input, Special element, [MaybeNullWhen(false)] out Parsed parser);
+
     public class Parser
     {
         private static readonly Dictionary<string, Parser> _parsers = new();
 
         public IReadOnlyDictionary<string, Rule> Rules { get; }
+        public Dictionary<string, TryParse> Specials { get; } = new();
 
         private Parser((string id, IElement element)[] rules)
         {
