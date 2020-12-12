@@ -16,7 +16,7 @@ namespace EBNF_Parser.Core
         {
             var rules = Regex.Split(content, @"\s*;\s*(?:\r?\n)+")
                 .Select(line => Regex.Replace(line, @"\s*(\r?\n)+\s*", " "))
-                .Select(line => Rule.TryParse(line, out var rule) ? rule : throw new())
+                .Select(line => Rule.TryParse(line, out var rule) ? rule : throw new(line))
                 .ToArray();
         }
     }
