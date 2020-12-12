@@ -5,15 +5,26 @@ namespace EBNF_Parser.Core
 {
     public class Repetition : IElement
     {
-        public Repetition(IElement value)
+        public Repetition(IElement element)
         {
-            Value = value;
+            Element = element;
         }
 
-        public IElement Value { get; }
+        public IElement Element { get; }
 
         public override string ToString()
-            => $"{{ {Value} }}";
+            => $"{{ {Element} }}";
+
+        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out int length)
+        {
+            length = 0;
+            while (true)
+                if (!Element.TryParse(input[length..], parser, out var l))
+                    break;
+                else
+                    length += l;
+            return true;
+        }
 
         public static bool TryParse(string input, [MaybeNullWhen(false)] out Repetition repetition)
         {

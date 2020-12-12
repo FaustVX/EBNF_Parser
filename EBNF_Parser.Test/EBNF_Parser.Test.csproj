@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EBNF_Parser.Core\EBNF_Parser.Core.csproj" />
-    <Content Include="*.ebnf">
+    <Content Include="Tests Files\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

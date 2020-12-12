@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -7,16 +8,19 @@ namespace EBNF_Parser.Core
 {
     public class Parser
     {
-        public Rule[] Rules { get; }
+        public IReadOnlyDictionary<string, Rule> Rules { get; }
 
-        public Parser(Rule[] rules)
+        private Parser((string id, IElement element)[] rules)
         {
-            Rules = rules;
+            Rules = rules.ToDictionary(rule => rule.id, rule => new Rule(rule.id, rule.element, this));
         }
 
-        public void ParseText(string content)
+        public bool ParseText(string content)
         {
-
+            foreach (var rule in Rules.Values)
+                if (rule.TryParse(content, out _))
+                    return true;
+            return false;
         }
 
         public static Parser ParseModel(string content)

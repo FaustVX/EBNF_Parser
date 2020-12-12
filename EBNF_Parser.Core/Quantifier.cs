@@ -17,6 +17,17 @@ namespace EBNF_Parser.Core
         public override string ToString()
             => $"{Quantity} * {Element}";
 
+        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out int length)
+        {
+            length = 0;
+            for (int i = 0; i < Quantity; i++)
+                if (!Element.TryParse(input[length..], parser, out var l))
+                    return false;
+                else
+                    length += l;
+            return true;
+        }
+
         public static bool TryParse(string input, [MaybeNullWhen(false)] out Exception exception)
         {
             var isOk = TryParse(input, out IElement? element);

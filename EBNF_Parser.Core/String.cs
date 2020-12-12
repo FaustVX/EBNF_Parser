@@ -15,6 +15,16 @@ namespace EBNF_Parser.Core
         public override string ToString()
             => $"\"{Value}\"";
 
+        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out int length)
+        {
+            length = 0;
+            if (input.StartsWith(Value))
+                length = Value.Length;
+            else
+                return false;
+            return true;
+        }
+
         public static bool TryParse(string input, [MaybeNullWhen(false)] out String @string)
         {
             var isOk = TryParse(input, out IElement? element);
@@ -27,7 +37,7 @@ namespace EBNF_Parser.Core
             // var doubleQuote = $"^(?:\\s*\"((?:{IElement.CharPattern + "|\\\\\\\"|\\\\\\\\|'"})*?)\"\\s*)$";
             // var singleQuote = $"^(?:\\s*'((?:{IElement.CharPattern + "|\\\\\\'|\\\\\\\\|\""})*?)'\\s*)$";
             // var pattern = $"{doubleQuote}|{singleQuote}"; // to print: " , in file: \" , in Regex: \\\" , in String: \\\\\\\"
-            var pattern = @"^(?:\s*'((?:[^""\\]|\\'|\\\\|\"")+?)'\s*)$|^(?:\s*""((?:[^""\\]|\\\""|\\\\|')+?)""\s*)$";
+            var pattern = @"^(?:\s*'((?:[^""\\]|\\'|\\\\|\""|\\r|\\n)+?)'\s*)$|^(?:\s*""((?:[^""\\]|\\\""|\\\\|'|\\r|\\n)+?)""\s*)$";
             var match = Regex.Match(input, pattern);
 
             element = default;

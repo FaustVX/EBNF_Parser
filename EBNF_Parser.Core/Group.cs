@@ -15,6 +15,9 @@ namespace EBNF_Parser.Core
         public override string ToString()
             => $"( {Value} )";
 
+        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out int length)
+            => Value.TryParse(input, parser, out length);
+
         public static bool TryParse(string input, [MaybeNullWhen(false)] out Group group)
         {
             var isOk = TryParse(input, out IElement? element);

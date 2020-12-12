@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
 
 namespace EBNF_Parser.Core
 {
@@ -19,6 +20,18 @@ namespace EBNF_Parser.Core
 
         public override string ToString()
             => string.Join<IElement>(", ", Elements);
+
+        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out int length)
+        {
+            length = 0;
+            foreach (var element in Elements)
+            {
+                if (!element.TryParse(input[length..], parser, out var l))
+                    return false;
+                length += l;
+            }
+            return true;
+        }
 
         public static bool TryParse(string input, [MaybeNullWhen(false)] out Concatenation concatenation)
         {
