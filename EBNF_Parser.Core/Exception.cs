@@ -20,14 +20,14 @@ namespace EBNF_Parser.Core
         public override string ToString()
             => string.Join<IElement>(" - ", Elements);
 
-        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out int length)
+        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
         {
             foreach (var element in Elements)
             {
-                if (element.TryParse(input, parser, out length))
+                if (element.TryParse(input, parser, out parsed))
                     return true;
             }
-            length = 0;
+            parsed = default;
             return false;
         }
 

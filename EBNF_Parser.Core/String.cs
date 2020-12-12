@@ -7,7 +7,11 @@ namespace EBNF_Parser.Core
     {
         public String(string value)
         {
-            Value = value;
+            Value = value.Replace(@"\\", "\\")
+                .Replace(@"\r", "\r")
+                .Replace(@"\n", "\n")
+                .Replace(@"\""", "\"")
+                .Replace(@"\'", "'");
         }
 
         public string Value { get; }
@@ -15,11 +19,11 @@ namespace EBNF_Parser.Core
         public override string ToString()
             => $"\"{Value}\"";
 
-        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out int length)
+        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
         {
-            length = 0;
+            parsed = default;
             if (input.StartsWith(Value))
-                length = Value.Length;
+                parsed = new(Value, this, Value.Length);
             else
                 return false;
             return true;
@@ -37,7 +41,7 @@ namespace EBNF_Parser.Core
             // var doubleQuote = $"^(?:\\s*\"((?:{IElement.CharPattern + "|\\\\\\\"|\\\\\\\\|'"})*?)\"\\s*)$";
             // var singleQuote = $"^(?:\\s*'((?:{IElement.CharPattern + "|\\\\\\'|\\\\\\\\|\""})*?)'\\s*)$";
             // var pattern = $"{doubleQuote}|{singleQuote}"; // to print: " , in file: \" , in Regex: \\\" , in String: \\\\\\\"
-            var pattern = @"^(?:\s*'((?:[^""\\]|\\'|\\\\|\""|\\r|\\n)+?)'\s*)$|^(?:\s*""((?:[^""\\]|\\\""|\\\\|'|\\r|\\n)+?)""\s*)$";
+            var pattern = @"^(?:\s*'((?:[^'\\]|\\'|\\\\|\""|\\r|\\n)+?)'\s*)$|^(?:\s*""((?:[^""\\]|\\\""|\\\\|'|\\r|\\n)+?)""\s*)$";
             var match = Regex.Match(input, pattern);
 
             element = default;

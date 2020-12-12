@@ -8,7 +8,7 @@ namespace EBNF_Parser.Core
     {
         string ToString();
 
-        bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out int length);
+        bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed);
 
         internal static string IdentifierPattern { get; } = "[a-zA-Z\\s_]+?";
         internal static string MultiElemPattern { get; } = @"\s*(.*?)\s*{0}\s*";

@@ -1,0 +1,10 @@
+move right = ">" ;
+move left = "<" ;
+increment = "+" ;
+decrement = "-" ;
+output = "." ;
+input = "," ;
+instruction = move right | move left | increment | decrement | output | input | whitespace | loop ;
+loop = "[" , { instruction } , "]" ;
+whitespace = " " | "\r\n" | "\n" ;
+program = { instruction } ;

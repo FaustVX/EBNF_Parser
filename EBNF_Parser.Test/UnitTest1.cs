@@ -10,10 +10,10 @@ namespace EBNF_Parser.Test
         [TestMethod]
         public void TestMethod1()
         {
-            var parser = Parser.ParseModel(@"fr = ""bonjour"", "" "", ""ça va "", { ""?"" };
+            var parser = Parser.ParseModel(@"fr = ( ""bonjour"", "" "", ""ça va "" ), { ""?"" };
 en = ""hi"", "" how are you "", { ""?"" };
 hi = fr | en");
-            var parsed = parser.Rules["hi"].TryParse("hi how are you ????", out var length);
+            var parsed = parser.Rules["hi"].TryParse("hi how are you ????", out var p);
 
             Assert.IsTrue(IElement.TryParse(@"""|"" | "",""", out var elem));
             Assert.IsTrue(elem is Alternation { Elements: { Length: 2 } e } && e[0] is String { Value: "|" } && e[1] is String { Value: "," });
@@ -21,9 +21,12 @@ hi = fr | en");
             Parser.ParseModel("plap = \"gfcvn,b\\\"\\\\'\"");
             Parser.ParseModel("plip = 'gfcvn,b\"\\\\\\'';");
             Assert.ThrowsException<System.Exception>(() => Parser.ParseModel("plup = 'gfcvn,b\\\"\\\\'';"));
+            parser = Parser.ParseModel(File.ReadAllText("Tests Files\\bf.ebnf"));
+            parsed = parser.Rules["program"].TryParse(File.ReadAllText("Tests Files\\hello.bf"), out p);
             parser = Parser.ParseModel(File.ReadAllText("Tests Files\\Pascal.ebnf"));
-            parsed = parser.Rules["program"].TryParse(File.ReadAllText("Tests Files\\DEMO1.pascal"), out length);
-            Parser.ParseModel(File.ReadAllText("Tests Files\\EBNF.ebnf"));
+            parsed = parser.Rules["program"].TryParse(File.ReadAllText("Tests Files\\DEMO1.pascal"), out p);
+            parser = Parser.ParseModel(File.ReadAllText("Tests Files\\EBNF.ebnf"));
+            parsed = parser.Rules["grammar"].TryParse(File.ReadAllText("Tests Files\\EBNF.ebnf"), out p);
         }
     }
 }

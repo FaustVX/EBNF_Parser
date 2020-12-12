@@ -21,15 +21,19 @@ namespace EBNF_Parser.Core
         public override string ToString()
             => string.Join<IElement>(", ", Elements);
 
-        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out int length)
+        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
         {
-            length = 0;
+            var length = 0;
+            parsed = default;
+            var list = new List<Parsed>(Elements.Length);
             foreach (var element in Elements)
             {
                 if (!element.TryParse(input[length..], parser, out var l))
                     return false;
-                length += l;
+                length += l.Length;
+                list.Add(l);
             }
+            parsed = new(input[..length], this, length, list.ToArray());
             return true;
         }
 

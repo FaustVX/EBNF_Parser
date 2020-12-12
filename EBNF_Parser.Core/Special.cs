@@ -15,8 +15,8 @@ namespace EBNF_Parser.Core
         public override string ToString()
             => $"? {Value} ?";
 
-        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out int length)
-            => (length = 0) is not 0;
+        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
+            => (parsed = new(input, this, input.Length)) is not null;
 
         public static bool TryParse(string input, [MaybeNullWhen(false)] out Special special)
         {

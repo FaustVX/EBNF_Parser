@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
@@ -17,14 +18,19 @@ namespace EBNF_Parser.Core
         public override string ToString()
             => $"{Quantity} * {Element}";
 
-        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out int length)
+        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
         {
-            length = 0;
+            var length = 0;
+            parsed = default;
+            var list = new List<Parsed>(Quantity);
             for (int i = 0; i < Quantity; i++)
-                if (!Element.TryParse(input[length..], parser, out var l))
+            {
+                if (!Element.TryParse(input[length..], parser, out var p))
                     return false;
-                else
-                    length += l;
+                length += p.Length;
+                list.Add(p);
+            }
+            parsed = new(input[..length], this, length, list.ToArray());
             return true;
         }
 

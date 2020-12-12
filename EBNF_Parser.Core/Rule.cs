@@ -26,7 +26,7 @@ namespace EBNF_Parser.Core
                 && ((rule = (g[1].Value, elem)) is not (null, null));
         }
 
-        public bool TryParse(string input, [MaybeNullWhen(false)] out int length)
-            => Element.TryParse(input, Parser, out length);
+        public bool TryParse(string input, [MaybeNullWhen(false)] out Parsed parsed)
+            => Element.TryParse(input, Parser, out parsed);
     }
 }
