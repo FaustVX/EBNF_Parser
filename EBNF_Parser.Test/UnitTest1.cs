@@ -10,23 +10,22 @@ namespace EBNF_Parser.Test
         [TestMethod]
         public void TestMethod1()
         {
-            var parser = Parser.ParseModel(@"fr = ( ""bonjour"", "" "", ""ça va "" ), { ""?"" };
-en = ""hi"", "" how are you "", { ""?"" };
-hi = fr | en");
+            var parser = Parser.ParseModel(@"fr = ( ""bonjour"", "" "", ""ça va "" );
+en = ""hi"", "" how are you "";
+hi = (fr | en), { 2 * ""?"" }");
             var parsed = parser.Rules["hi"].TryParse("hi how are you ????", out var p);
+            parsed = parser.Rules["hi"].TryParse("hi how are you ?????", out p);
+            parsed = parser.Rules["hi"].TryParse("hi how are you ??????", out p);
 
             Assert.IsTrue(IElement.TryParse(@"""|"" | "",""", out var elem));
             Assert.IsTrue(elem is Alternation { Elements: { Length: 2 } e } && e[0] is String { Value: "|" } && e[1] is String { Value: "," });
-            // Assert.IsTrue(Parser.ParseModel("plop = \"gfcvn,b\\\"\\\\'\";") is {Rules: { Length: 1 } r } && r[0] is { Identifier: "plop", Element: String { Value: "gfcvn,b\\\"\\\\'" }});
+            Assert.IsTrue(Parser.ParseModel("plop = \"gfcvn,b\\\"\\\\'\";") is {Rules: { Count: 1 } r } && r["plop"] is { Identifier: "plop", Element: String { Value: "gfcvn,b\"'" }});
             Parser.ParseModel("plap = \"gfcvn,b\\\"\\\\'\"");
             Parser.ParseModel("plip = 'gfcvn,b\"\\\\\\'';");
             Assert.ThrowsException<System.Exception>(() => Parser.ParseModel("plup = 'gfcvn,b\\\"\\\\'';"));
+            parsed = Parser.TryParseFile("Tests Files\\hello.bf", "program", out p);
             parser = Parser.ParseModel(File.ReadAllText("Tests Files\\bf.ebnf"));
             parsed = parser.Rules["program"].TryParse(File.ReadAllText("Tests Files\\hello.bf"), out p);
-            parser = Parser.ParseModel(File.ReadAllText("Tests Files\\Pascal.ebnf"));
-            parsed = parser.Rules["program"].TryParse(File.ReadAllText("Tests Files\\DEMO1.pascal"), out p);
-            parser = Parser.ParseModel(File.ReadAllText("Tests Files\\EBNF.ebnf"));
-            parsed = parser.Rules["grammar"].TryParse(File.ReadAllText("Tests Files\\EBNF.ebnf"), out p);
         }
     }
 }

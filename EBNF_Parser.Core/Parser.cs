@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -8,6 +9,8 @@ namespace EBNF_Parser.Core
 {
     public class Parser
     {
+        private static readonly Dictionary<string, Parser> _parsers = new();
+
         public IReadOnlyDictionary<string, Rule> Rules { get; }
 
         private Parser((string id, IElement element)[] rules)
@@ -31,13 +34,20 @@ namespace EBNF_Parser.Core
                 };
         }
 
-        public bool TryParse(string content, [MaybeNullWhen(false)] Parsed parsed)
+        public bool TryParse(string content, [MaybeNullWhen(false)] out Parsed parsed)
         {
             foreach (var rule in Rules.Values)
                 if (rule.TryParse(content, out parsed))
                     return true;
+            parsed = default;
             return false;
         }
+
+        public static bool TryParseFile(string filePath, string rule, [MaybeNullWhen(false)] out Parsed parsed)
+            => (_parsers.TryGetValue(Path.GetExtension(filePath), out var parser)
+                ? parser
+                : (_parsers[Path.GetExtension(filePath)] = ParseModel(File.ReadAllText(Path.Combine(Path.GetDirectoryName(filePath) ?? "" ,Path.GetExtension(filePath).Trim('.') + ".ebnf")))))
+                .Rules[rule].TryParse(File.ReadAllText(filePath), out parsed);
 
         public static Parser ParseModel(string content)
             => new(Regex.Split(content, @"\s*;\s*(?:\r?\n)+")
