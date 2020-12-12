@@ -23,12 +23,6 @@ namespace EBNF_Parser.Core
         }
 
         internal static bool TryParse(string input, [MaybeNullWhen(false)] out IElement element)
-        {
-            var match = Regex.Match(input, @"^\s*\?(.*?)\?\s*$");
-
-            element = default;
-            return match is { Success: true, Groups: { Count: >= 2 } g }
-                && ((element = new Special(g[1].Value)) is not null);
-        }
+            => IElement.TryParseGroupping(input, @"\?", @"\?", out element, elem => new Special(elem));
     }
 }

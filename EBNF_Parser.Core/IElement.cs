@@ -8,9 +8,9 @@ namespace EBNF_Parser.Core
     {
         string ToString();
 
-        internal static string IdentifierPattern { get; } = "[a-zA-Z\\s_]+";
-        internal static string CharPattern { get; } = "[a-zA-Z0-9_&()<>{}=+*.,;:!?%$€#^" + /*/"]";//*/@"\|\-\[\]\/\s]";
+        internal static string IdentifierPattern { get; } = "[a-zA-Z\\s_]+?";
         internal static string MultiElemPattern { get; } = @"\s*(.*?)\s*{0}\s*";
+        internal static string GrouppingPattern { get; } = @"^\s*{0}\s*(.*?)\s*{1}\s*$";
 
         protected static bool TryParseMultiElem(string input, string separator, [MaybeNullWhen(false)] out IElement element, Func<IElement, IElement, IElement> ctor)
         {
@@ -25,6 +25,26 @@ namespace EBNF_Parser.Core
                     && ((element = ctor(elem1, elem2)) is not null))
                         return true;
             return false;
+        }
+
+        protected static bool TryParseGroupping(string input, string groupOpen, string groupClose, [MaybeNullWhen(false)] out IElement element, Func<IElement, IElement> ctor)
+        {
+            var match = Regex.Match(input, string.Format(IElement.GrouppingPattern, groupOpen, groupClose));
+
+            element = default;
+            return match is { Success: true, Groups: { Count: >= 2 } g }
+                && IElement.TryParse(g[1].Value, out var elem)
+                && ((element = ctor(elem)) is not null);
+        }
+
+        protected static bool TryParseGroupping(string input, string groupOpen, string groupClose, [MaybeNullWhen(false)] out IElement element, Func<string, IElement> ctor)
+        {
+            var match = Regex.Match(input, string.Format(IElement.GrouppingPattern, groupOpen, groupClose));
+
+            element = default;
+            return match is { Success: true, Groups: { Count: >= 2 } g }
+                && g[1].Value is var elem
+                && ((element = ctor(elem)) is not null);
         }
 
         public static bool TryParse(string input, [MaybeNullWhen(false)] out IElement element)
