@@ -19,15 +19,17 @@ namespace EBNF_Parser.Core
         private Parser((string id, IElement element)[] rules)
         {
             Rules = rules.ToDictionary(rule => rule.id, rule => new Rule(rule.id, rule.element, this));
-            var identifier = Rules.Values.SelectMany(rule => SelectMany(rule.Element)).OfType<Identifier>().FirstOrDefault(elem => !Rules.ContainsKey(elem.Value));
+            var identifier = Rules.Values.SelectMany(rule => SelectMany(rule, rule.Element)).OfType<Identifier>().FirstOrDefault(elem => !Rules.ContainsKey(elem.Value));
             if (identifier is not null)
-                throw new ArgumentOutOfRangeException("identifier", identifier, null);
+                throw new UnreferencedIdentifierException(identifier.Value);
 
-            static IEnumerable<IElement> SelectMany(IElement element)
+            static IEnumerable<IElement> SelectMany(Rule rule, IElement element)
                 => element switch
                 {
-                    MultiElement { Elements: var elem } => elem,
-                    SingleElement { Element: var elem } => Enumerable.Repeat(elem, 1),
+                    MultiElement { Elements: var elem } => elem.SelectMany(e => SelectMany(rule, e)),
+                    SingleElement { Element: var elem } => SelectMany(rule, elem),
+                    Quantifier { Element: var elem } => SelectMany(rule, elem),
+                    Identifier { Value: var value } when value == rule.Identifier => throw new CyclicReferenceException(value),
                     _ => Enumerable.Empty<IElement>()
                 };
         }
@@ -50,7 +52,7 @@ namespace EBNF_Parser.Core
         public static Parser ParseModel(string content)
             => new(Regex.Split(content, @"\s*;\s*(?:\r?\n)+")
                 .Select(line => Regex.Replace(line, @"\s*(\r?\n)+\s*", " "))
-                .Select(line => Rule.TryParse(line, out var rule) ? rule : throw new(line))
+                .Select(line => Rule.TryParse(line, out var rule) ? rule : throw new())
                 .ToArray());
     }
 }

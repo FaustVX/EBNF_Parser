@@ -20,10 +20,11 @@ namespace EBNF_Parser.Core
         {
             var match = Regex.Match(input, @$"^\s*({IElement.IdentifierPattern})\s*=\s*(.*?)(?:\s*;\s*)?\s*$");
 
+            if (match is not { Success: true, Groups: { Count: >= 3 } g })
+                throw new InvalidRuleSyntax(input);
             rule = default;
-            return match is { Success: true, Groups: { Count: >= 3 } g }
-                && IElement.TryParse(g[2].Value, out var elem)
-                && ((rule = (g[1].Value, elem)) is not (null, null));
+            return IElement.TryParse(g[2].Value, out var elem)
+                && ((rule = (g[1].Value, elem)) is not (null, null)) ? true : throw new InvalidRuleDefinitionSyntax(g[1].Value, g[2].Value);
         }
 
         public bool TryParse(string input, [MaybeNullWhen(false)] out Parsed parsed)
