@@ -25,7 +25,7 @@ namespace EBNF_Parser.Core
 
         public static bool TryParse(string input, [MaybeNullWhen(false)] out IElement element)
             => Quantifier.TryParse(input, out element)
-            || Exception.TryParse(input, out element)
+            // || Exception.TryParse(input, out element)
             || Alternation.TryParse(input, out element)
             || Concatenation.TryParse(input, out element)
 

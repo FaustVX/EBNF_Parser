@@ -31,6 +31,9 @@ hi = (fr | en), { 2 * ""?"" } | ? binary 65 ?;");
             parsed = Parser.TryParseFile("Tests Files\\hello.bf", "program", out p);
             parser = Parser.ParseModel(File.ReadAllText("Tests Files\\bf.ebnf"));
             parsed = parser.Rules["program"].TryParse(File.ReadAllText("Tests Files\\hello.bf"), out p);
+
+            parser = Parser.ParseModel(File.ReadAllText("Tests Files\\json.ebnf"));
+            parsed = parser.Rules["file"].TryParse(File.ReadAllText("Tests Files\\test1.json"), out p);
         }
     }
 }

@@ -1,0 +1,21 @@
+file = token;
+token = object | array | string | number | boolean | "null" ;
+boolean = "true" | "false";
+number = [ '-' ], digits, [ '.' , digits];
+digits = digit, { digit };
+digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+string = '"', characters, '"';
+characters = character, { character };
+character = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' |
+        'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' |
+        '(' | ')' | '{' | '}' | '[' | ']' | '<' | '>' | ',' | '?' | ';' | '.' | ':' | '!' | '\'' | '_' | '@' | '=' | '+' | '-' | '*' | '€' | '$' | '£' | ' ' |
+        digit | escaped;
+escaped = '\\', ( 'r' | 'n' | '\\' | '"' | '/' | 'b' | 'f' | 't' );
+array = '[', tokens, ']';
+tokens = whitespace, token, { comma, token }, whitespace;
+object = '{', properties, '}';
+properties = whitespace, property, { comma, property }, whitespace;
+comma = whitespace, ',', whitespace;
+property = string, colon, token;
+colon = whitespace, ':', whitespace;
+whitespace = { ' ' | '\r\n' | '\n' };

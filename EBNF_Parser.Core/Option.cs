@@ -13,7 +13,7 @@ namespace EBNF_Parser.Core
             => $"[ {Element} ]";
 
         public override bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
-            => (Element.TryParse(input, parser, out var p) && (parsed = p.With(this)) is not null) || (parsed = default) is not null;
+            => (Element.TryParse(input, parser, out var p) && (parsed = p.With(this)) is not null) || (parsed = new Parsed("", this, 0)) is not null;
 
         public static bool TryParse(string input, [MaybeNullWhen(false)] out Option option)
         {
