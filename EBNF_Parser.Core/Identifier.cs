@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
@@ -15,8 +16,8 @@ namespace EBNF_Parser.Core
         public override string ToString()
             => Value;
 
-        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
-            => (parser.Rules.TryGetValue(Value, out var elem) && elem.Element.TryParse(input, parser, out var p) && (parsed = p.With(this)) is not null) || (parsed = default) is not null;
+        public bool TryParse(ReadOnlySpan<char> input, int start, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
+            => (parser.Rules.TryGetValue(Value, out var elem) && elem.Element.TryParse(input, start, parser, out var p) && (parsed = p.With(this)) is not null) || (parsed = default) is not null;
 
 
         public static bool TryParse(string input, [MaybeNullWhen(false)] out Option option)

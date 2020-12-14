@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -18,19 +19,19 @@ namespace EBNF_Parser.Core
         public override string ToString()
             => string.Join<IElement>(", ", Elements);
 
-        public override bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
+        public override bool TryParse(ReadOnlySpan<char> input, int start, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
         {
             var length = 0;
             parsed = default;
             var list = new List<Parsed>(Elements.Length);
             foreach (var element in Elements)
             {
-                if (!element.TryParse(input[length..], parser, out var l))
+                if (!element.TryParse(input[length..], length + start, parser, out var l))
                     return false;
                 length += l.Length;
                 list.Add(l);
             }
-            parsed = new(input[..length], this, length, list.ToArray());
+            parsed = new(input[..length].ToString(), this, start, length, list.ToArray());
             return true;
         }
 

@@ -15,7 +15,7 @@ namespace EBNF_Parser.Core
 
         public IElement Element { get; }
 
-        public abstract bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed);
+        public abstract bool TryParse(ReadOnlySpan<char> input, int start, Parser parser, [MaybeNullWhen(false)] out Parsed parsed);
 
         public abstract override string ToString();
 

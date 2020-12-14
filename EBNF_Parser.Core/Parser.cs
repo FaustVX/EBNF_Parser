@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace EBNF_Parser.Core
 {
-    public delegate bool TryParse(string input, Special element, [MaybeNullWhen(false)] out Parsed parser);
+    public delegate bool TryParse(ReadOnlySpan<char> input, int start, Special element, [MaybeNullWhen(false)] out Parsed parser);
 
     public class Parser
     {
@@ -24,14 +24,14 @@ namespace EBNF_Parser.Core
                 throw new UnreferencedIdentifierException(identifier.Value);
 
             static IEnumerable<IElement> SelectMany(Rule rule, IElement element)
-                => element switch
+                => (element switch
                 {
                     MultiElement { Elements: var elem } => elem.SelectMany(e => SelectMany(rule, e)),
                     SingleElement { Element: var elem } => SelectMany(rule, elem),
                     Quantifier { Element: var elem } => SelectMany(rule, elem),
                     Identifier { Value: var value } when value == rule.Identifier => throw new CyclicReferenceException(value),
                     _ => Enumerable.Empty<IElement>()
-                };
+                }).Prepend(element);
         }
 
         public bool TryParse(string content, [MaybeNullWhen(false)] out Parsed parsed)

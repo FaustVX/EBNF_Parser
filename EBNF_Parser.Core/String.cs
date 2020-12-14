@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
@@ -19,11 +20,11 @@ namespace EBNF_Parser.Core
         public override string ToString()
             => $"\"{Value}\"";
 
-        public bool TryParse(string input, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
+        public bool TryParse(ReadOnlySpan<char> input, int start, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
         {
             parsed = default;
             if (input.StartsWith(Value))
-                parsed = new(Value, this, Value.Length);
+                parsed = new(Value, this, start, Value.Length);
             else
                 return false;
             return true;
