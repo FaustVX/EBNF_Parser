@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace EBNF_Parser.Core
@@ -31,6 +32,10 @@ namespace EBNF_Parser.Core
         public int Length { get; }
         public Parsed? Parent { get; }
         public Parsed[] Children { get; }
+        public Parsed Root => ((Parent is not null) ? Parent.Root : Parent) ?? this;
+
+        public bool Modify(string value, Parser parser, [MaybeNullWhen(false)] out Parsed parsed)
+            => Root.Parser.TryParse(Root.Value[..Start] + value + Root.Value[(Start + Length)..], Start, parser, out parsed) && (parsed = parsed!.With(default(Parsed)!, 0)) is not null;
 
         public Parsed With(IElement element)
             => new(Value, element, Start, Length, Parent, this);
