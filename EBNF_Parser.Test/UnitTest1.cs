@@ -19,6 +19,10 @@ hi = (fr | en), { 2 * ""?"" } | ? binary 65 ?;");
             parsed = parser.Rules["hi"].TryParse("hi how are you ??????", out p);
             parsed = parser.Rules["hi"].TryParse("A", out p);
 
+            parser = Parser.ParseModel("q = 3 * 'A';\nr = { 'A' }");
+            parsed = parser.Rules["q"].TryParse("AAA", out p);
+            parsed = parser.Rules["r"].TryParse("AAA", out p);
+
             Assert.IsTrue(IElement.TryParse(@"""|"" | "",""", out var elem));
             Assert.IsTrue(elem is Alternation { Elements: { Length: 2 } e } && e[0] is String { Value: "|" } && e[1] is String { Value: "," });
             Assert.IsTrue(Parser.ParseModel("plop = \"gfcvn,b\\\"\\\\'\";") is {Rules: { Count: 1 } r } && r["plop"] is { Identifier: "plop", Element: String { Value: "gfcvn,b\"'" }});

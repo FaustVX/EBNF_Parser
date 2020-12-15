@@ -10,7 +10,7 @@ namespace EBNF_Parser.Core
 
         bool TryParse(ReadOnlySpan<char> input, int start, Parser parser, [MaybeNullWhen(false)] out Parsed parsed);
 
-        internal static string IdentifierPattern { get; } = "[a-zA-Z_][a-zA-Z0-9\\s_]+?";
+        internal static string IdentifierPattern { get; } = "[a-zA-Z_][a-zA-Z0-9\\s_]*?";
         private static string GrouppingPattern { get; } = @"^\s*{0}\s*(.*?)\s*{1}\s*$";
 
         protected static bool TryParseGroupping(string input, string groupOpen, string groupClose, [MaybeNullWhen(false)] out IElement element, Func<string, IElement> ctor)
