@@ -17,7 +17,10 @@ hi = (fr | en), { 2 * ""?"" } | ? binary 65 ?;");
             var parsed = parser.Rules["hi"].TryParse("hi how are you ????", out var p);
             parsed = parser.Rules["hi"].TryParse("hi how are you ?????", out p);
             parsed = parser.Rules["hi"].TryParse("hi how are you ??????", out p);
-            parsed = parser.Rules["hi"].TryParse("A", out p);
+            Assert.IsTrue(parsed = parser.Rules["hi"].TryParse("A", out p));
+            Assert.IsNotNull(p);
+            Assert.IsFalse(parsed = parser.Rules["hi"].TryParse("B", out p));
+            Assert.IsNull(p);
 
             parser = Parser.ParseModel("q = 3 * 'A';\nr = { 'A' }");
             parsed = parser.Rules["q"].TryParse("AAA", out p);
