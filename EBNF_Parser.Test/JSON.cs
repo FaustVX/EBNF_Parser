@@ -31,6 +31,9 @@ namespace EBNF_Parser.Parsers
                 { Parser: Identifier { Value: "string" } } => new String(parsed.FindFirst("characters")!),
                 { Parser: Identifier { Value: "object" } } => new Object(parsed.FindFirst("properties")!),
                 { Parser: Identifier { Value: "array"  } } => new Array (parsed.FindFirst("tokens")!),
+                { Parser: Identifier { Value: "boolean" } } => new Boolean (parsed),
+                { Parser: Identifier { Value: "number" } } => new Number (parsed),
+                { Parser: EBNF_Parser.Core.String { Value: "null"  } } => new Null (),
             };
     }
 
@@ -42,6 +45,32 @@ namespace EBNF_Parser.Parsers
         }
 
         public string Value { get; }
+    }
+
+    public sealed class Boolean : Token
+    {
+        internal Boolean(Parsed parsed)
+        {
+            Value = bool.Parse(parsed.Value);
+        }
+
+        public bool Value { get; }
+    }
+
+    public sealed class Null : Token
+    {
+        internal Null()
+        { }
+    }
+
+    public sealed class Number : Token
+    {
+        internal Number(Parsed parsed)
+        {
+            Value = double.Parse(parsed.Value);
+        }
+
+        public double Value { get; }
     }
 
     public class Object : Token
