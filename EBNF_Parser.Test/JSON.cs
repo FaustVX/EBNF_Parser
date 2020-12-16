@@ -28,9 +28,9 @@ namespace EBNF_Parser.Parsers
         internal static Token Create(Parsed parsed)
             => parsed.Children[0] switch
             {
-                { Parser: Identifier { Value: "string" }, Children: var c } => new String(c[0].Children[1]),
-                { Parser: Identifier { Value: "object" }, Children: var c } => new Object(c[0].Children[1]),
-                { Parser: Identifier { Value: "array"  }, Children: var c } => new Array (c[0].Children[1]),
+                { Parser: Identifier { Value: "string" } } => new String(parsed.FindFirst("characters")!),
+                { Parser: Identifier { Value: "object" } } => new Object(parsed.FindFirst("properties")!),
+                { Parser: Identifier { Value: "array"  } } => new Array (parsed.FindFirst("tokens")!),
             };
     }
 
@@ -52,9 +52,12 @@ namespace EBNF_Parser.Parsers
 
             IEnumerable<Property> GetProperties()
             {
-                yield return new Property(properties.Children[0].Children[1]);
-                foreach (var property in properties.Children[0].Children[2].Children)
-                    yield return new Property(property.Children[1]);
+                var property = properties.FindFirst("property");
+                if (property is null)
+                    yield break;
+                yield return new Property(property);
+                for (property = property.Next?.FindFirst("property"); property is not null; property = property.Parent?.Next?.FindFirst("property"))
+                    yield return new Property(property);
             }
         }
 
@@ -69,9 +72,12 @@ namespace EBNF_Parser.Parsers
 
             IEnumerable<Token> GetValues()
             {
-                yield return Token.Create(properties.Children[0].Children[1]);
-                foreach (var property in properties.Children[0].Children[2].Children)
-                    yield return Token.Create(property.Children[1]);
+                var property = properties.FindFirst("token");
+                if (property is null)
+                    yield break;
+                yield return Token.Create(property);
+                for (property = property.Next?.FindFirst("token"); property is not null; property = property.Parent?.Next?.FindFirst("token"))
+                    yield return Token.Create(property);
             }
         }
 

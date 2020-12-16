@@ -16,6 +16,7 @@ hi = (fr | en), { 2 * ""?"" } | ? binary 65 ?;");
             parser.Specials["binary"] = static (System.ReadOnlySpan<char> input, int start, Special element, out Parsed p) => byte.TryParse(element.Parameter, out var b) && (byte)input[0] == b ? (p = new(input[..1].ToString(), element, start, 1)) is not null : (p = default!) is not null;
             var parsed = parser.Rules["hi"].TryParse("hi how are you ????", out var p);
             parsed = parser.Rules["hi"].TryParse("hi how are you ?????", out p);
+            p?.FindFirst("en")?.Modify("bonjour ça va ", parser, out p);
             p?.Children[0].Modify("bonjour ça va ", parser, out p);
             p?.Children[0].Children[0].Children[0].Modify("salut", parser, out p);
             parsed = parser.Rules["hi"].TryParse("hi how are you ??????", out p);

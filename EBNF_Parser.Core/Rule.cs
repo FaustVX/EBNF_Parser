@@ -28,6 +28,6 @@ namespace EBNF_Parser.Core
         }
 
         public bool TryParse(string input, [MaybeNullWhen(false)] out Parsed parsed)
-            => Element.TryParse(input, 0, Parser, out parsed) && (parsed = parsed?.With(default(Parsed)!)) is not null;
+            => Element.TryParse(input, 0, Parser, out parsed) && (parsed = parsed?.With(default(Parsed)!, 0)) is not null;
     }
 }
